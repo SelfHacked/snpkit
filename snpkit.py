@@ -1,5 +1,7 @@
 import click
 
+from src.snpkit import generate_bedfile
+
 
 @click.group()
 def snpkit():
@@ -8,11 +10,11 @@ def snpkit():
 
 
 @snpkit.command()
-@click.argument('file')
+@click.argument('snp-list')
 @click.argument('output')
-def bedfile(file: str, output: str):
+def bedfile(snp_list: str, output: str):
     """Create bed file from snp list."""
-    pass
+    generate_bedfile(output, snp_list)
 
 
 if __name__ == '__main__':

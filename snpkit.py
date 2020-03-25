@@ -27,7 +27,7 @@ def getfasta(snp_list: str, fasta: str, output: str):
     """Generate fasta from reference."""
     with tempfile.NamedTemporaryFile() as f_bed:
         generate_bedfile(snp_list, f_bed.name)
-        generate_fasta(f_bed, fasta, output)
+        generate_fasta(f_bed.name, fasta, output)
 
 
 if __name__ == '__main__':

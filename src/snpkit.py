@@ -14,11 +14,14 @@ def generate_fasta(bed_file, fasta_file, output_file):
         [
             'bedtools',
             'getfasta',
-            f'-fi {fasta_file}',
-            f'-bed {bed_file}',
+            '-fi',
+            fasta_file,
+            '-bed',
+            bed_file,
             '-name',
-            '-tab'
-            f'-fo {output_file}'
+            '-tab',
+            '-fo',
+            output_file,
         ],
     )
 
@@ -52,7 +55,7 @@ def _extract_snps(snp_list):
 
 
 def _output_to_bedfile(output, snps):
-    with gzip.open(output, mode='wt') as fout:
+    with open(output, mode='wt') as fout:
         writer = csv.writer(fout, delimiter='\t')
         for chrom, pos, rsid in snps:
             writer.writerow([chrom, pos - 1, pos, rsid])

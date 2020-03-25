@@ -23,7 +23,7 @@ def bedfile(snp_list: str, output: str):
 @click.option('--snp-list', required=True, help='Snp list file')
 @click.option('--fasta', required=True, help='Build37 Fasta reference')
 @click.argument('output')
-def generate_fasta(snp_list: str, fasta: str, output: str):
+def getfasta(snp_list: str, fasta: str, output: str):
     """Generate fasta from reference."""
     with tempfile.NamedTemporaryFile() as f_bed:
         generate_bedfile(snp_list, f_bed.name)

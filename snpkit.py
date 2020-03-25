@@ -1,6 +1,8 @@
+import tempfile
+
 import click
 
-from src.snpkit import generate_bedfile
+from src.snpkit import generate_bedfile, generate_fasta
 
 
 @click.group()
@@ -10,11 +12,22 @@ def snpkit():
 
 
 @snpkit.command()
-@click.argument('snp-list')
+@click.option('--snp-list', required=True, help='Snp list file')
 @click.argument('output')
 def bedfile(snp_list: str, output: str):
     """Create bed file from snp list."""
-    generate_bedfile(output, snp_list)
+    generate_bedfile(snp_list, output)
+
+
+@snpkit.command()
+@click.option('--snp-list', required=True, help='Snp list file')
+@click.option('--fasta', required=True, help='Build37 Fasta reference')
+@click.argument('output')
+def generate_fasta(snp_list: str, fasta: str, output: str):
+    """Generate fasta from reference."""
+    with tempfile.NamedTemporaryFile() as f_bed:
+        generate_bedfile(snp_list, f_bed.name)
+        generate_fasta(f_bed, fasta, output)
 
 
 if __name__ == '__main__':

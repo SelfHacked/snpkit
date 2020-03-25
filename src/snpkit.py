@@ -1,24 +1,58 @@
 import csv
 import gzip
+import subprocess
 
 
-def generate_bedfile(output, snp_list):
+def generate_bedfile(snp_list, output):
+    snps = _extract_snps(snp_list)
+    snps = _sort_snps_by_chrom_pos(snps)
+    _output_to_bedfile(output, snps)
+
+
+def generate_fasta(bed_file, fasta_file, output_file):
+    subprocess.run(
+        [
+            'bedtools',
+            'getfasta',
+            f'-fi {fasta_file}',
+            f'-bed {bed_file}',
+            '-name',
+            '-tab'
+            f'-fo {output_file}'
+        ],
+    )
+
+
+def _sort_snps_by_chrom_pos(snps):
+    snps = sorted(snps)
+    return snps
+
+
+def _extract_snps(snp_list):
     with gzip.open(snp_list, mode='rt') as fin:
         reader = csv.reader(fin, delimiter='\t')
         next(reader)  # skip header
 
         snps = []
         for line in reader:
-            if len(line) >= 3 and (not line[1] or not line[2]):
-                # chromosome or position are empty
+            # skip if chromosome or position are empty
+            if len(line) < 3 or (not line[1] or not line[2]):
                 continue
 
+            # skp if genotype is available
+            if len(line) >= 4 and len(line[3]) == 2:
+                continue
+
+            rsid = line[0]
             chrom = int(line[1])
             pos = int(line[2])
 
-            snps.append((chrom, pos))
-    snps = sorted(snps)
+            snps.append((chrom, pos, rsid))
+    return snps
+
+
+def _output_to_bedfile(output, snps):
     with gzip.open(output, mode='wt') as fout:
         writer = csv.writer(fout, delimiter='\t')
-        for chrom, pos in snps:
-            writer.writerow([chrom, pos - 1, pos])
+        for chrom, pos, rsid in snps:
+            writer.writerow([chrom, pos - 1, pos, rsid])

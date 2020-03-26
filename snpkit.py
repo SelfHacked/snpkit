@@ -13,10 +13,11 @@ def snpkit():
 
 @snpkit.command()
 @click.option('--snp-list', required=True, help='Snp list file')
+@click.option('--limit', is_flag=True, help='Limit to unknow SNPs')
 @click.argument('output')
-def bedfile(snp_list: str, output: str):
+def bedfile(snp_list: str, output: str, limit: bool):
     """Create bed file from snp list."""
-    generate_bedfile(snp_list, output)
+    generate_bedfile(snp_list, output, skip_known=limit)
 
 
 @snpkit.command()

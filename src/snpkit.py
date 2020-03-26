@@ -3,8 +3,8 @@ import gzip
 import subprocess
 
 
-def generate_bedfile(snp_list, output):
-    snps = _extract_bedable_snps(snp_list)
+def generate_bedfile(snp_list, output, skip_known=False):
+    snps = _extract_bedable_snps(snp_list, skip_known)
     snps = _sort_snps_by_chrom_pos(snps)
     _output_to_bedfile(output, snps)
 

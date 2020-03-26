@@ -31,12 +31,14 @@ def gen_fromfasta(snp_list: str, fasta: str, limit: bool):
 @snpkit.command()
 @click.option('--snp-list', required=True, help='Snp list file')
 @click.option('--fasta', required=True, help='Build37 Fasta reference')
-@click.argument('output')
-def getfasta(snp_list: str, fasta: str, output: str):
-    """Generate fasta from reference."""
-    with tempfile.NamedTemporaryFile() as f_bed:
-        generate_bedfile(snp_list, f_bed.name)
-        generate_fasta(f_bed.name, fasta, output)
+@click.option('--limit', is_flag=True, help='Limit to unknow SNPs')
+def getref(snp_list: str, fasta: str, limit: bool):
+    """Generate updated reference file."""
+    with tempfile.NamedTemporaryFile(
+    ) as f_bed, tempfile.NamedTemporaryFile() as f_bed_fasta:
+        generate_bedfile(snp_list, f_bed.name, skip_known=limit)
+        generate_fasta(f_bed.name, fasta, f_bed_fasta.name)
+        generate_snp_reference(snp_list, f_bed_fasta.name, limited=limit)
 
 
 if __name__ == '__main__':
